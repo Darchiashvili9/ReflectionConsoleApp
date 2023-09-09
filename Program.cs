@@ -21,6 +21,8 @@ namespace ReflectionApiTipalti
             foreach (PropertyInfo property in properties)
             {
                 object propValue = property.GetValue(obj, null);
+                
+                //აქ უბრალოდ ვამოწმებთ ლისტი ხომ არაა, არაის ამბავში;
                 var elems = propValue as IList;
                 if (elems != null)
                 {
@@ -31,7 +33,11 @@ namespace ReflectionApiTipalti
                 }
                 else
                 {
-                    // This will not cut-off System.Collections because of the first check
+                    // ესაა მთავარი, თუკი ჩვენი გაკეთებული კლასია, იმავე ასამბლიში უნდა იყოს რაშიც ველი რომელსაც გადის ციკლი
+                    //თუკი არაა მაშინ სხვა ასამბლიდან იქნება
+                    //objType.Assembly ეს ველი რეკურსიის მიუხედავად ყოველთვის ერთი და იგივე იქნება, ამ ჩვენი ასამბლის სახელი ერქმევა
+                    //თუ ჩვენი ასამბლიში შექმნილი კლასია მაშინ მისი ველები ცალკეა გამოსაკვლევი და რეკურსიულად უნდა გავხნათ
+                    //თუკი არაა ჩვენი ასამბლის ნაწილი მაშინ ე.ი უკვე დასულებივართ კლასის ველის დონეზე და შეგვიძლია ეგრევე გამოვიტანოთ კონსოლში ველიუ;
                     if (property.PropertyType.Assembly == objType.Assembly)
                     {
                         Console.WriteLine("{0}{1}:", indentString, property.Name);
@@ -62,7 +68,8 @@ namespace ReflectionApiTipalti
             List<string> strings = new List<string>() { "Elene" };
 
             var name1 = new Name { FirstName = "George", LastName = "Darchiashvili" };
-            var Person1 = new Person { Age = 32, Name = name1 };
+            var prof = new Proffession { Name = ".Net Developer", Experience = 2 };
+            var Person1 = new Person { Age = 32, Saxeli = name1, Job = prof };
 
 
             PrintObject(Person1);
@@ -77,10 +84,17 @@ namespace ReflectionApiTipalti
             public string? LastName { get; set; }
         }
 
+        class Proffession
+        {
+            public string? Name { get; set; }
+            public int Experience { get; set; }
+        }
+
         class Person
         {
             public int Age { get; set; }
-            public Name? Name { get; set; }
+            public Name? Saxeli { get; set; }
+            public Proffession? Job { get; set; }
             // public List<string>? ChildrenNames { get; set; }
         }
     }
